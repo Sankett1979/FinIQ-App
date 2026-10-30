@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FINIQ | Ask Finance</title>
+<!-- Google Analytics (Optional) -->
+
+<!-- Export and Markdown Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{--red:#d71920;--red2:#b30f16;--ink:#20252b;--muted:#66707a;--line:#e5e8eb;--bg:#f5f6f7;--card:#fff;--green:#16845b;--amber:#a66a00;--blue:#2563a8;--shadow:0 8px 28px rgba(20,27,35,.08);--r:14px}
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;}body{font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+/* Login */
+#login{height:100%;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 15% 20%,#fff 0,transparent 42%),radial-gradient(circle at 90% 80%,#fff 0,transparent 40%),var(--bg)}
+.login-card{width:min(850px,100%);background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 20px 70px rgba(20,27,35,.12);overflow:hidden}.login-top{padding:34px 38px;color:#fff;background:linear-gradient(135deg,var(--red),var(--red2));display:flex;gap:15px;align-items:center}.mark{width:38px;height:38px;border-radius:10px;background:#fff1;display:grid;place-items:center;border:1px solid #fff5}.mark svg{width:24px;height:24px;fill:#fff}.login-top h1{margin:0;font-size:25px}.login-top p{margin:4px 0 0;opacity:.85;font-size:13px}.login-body{padding:30px 38px 34px}.login-body h2{margin:0 0 5px;font-size:18px}.sub{color:var(--muted);font-size:13px;margin:0 0 22px}.login-form{display:flex;gap:10px}.login-form input{flex:1;border:1px solid var(--line);border-radius:10px;padding:12px 14px;outline:none}.login-form input:focus{border-color:var(--red);box-shadow:0 0 0 3px #d7192015}.primary{border:0;background:var(--red);color:#fff;border-radius:10px;padding:11px 17px;font-weight:700}.primary:hover{background:var(--red2)}.login-error{color:var(--red);font-size:12px;margin-top:10px}.demo-users{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.demo-user{flex:1;min-width:190px;text-align:center;border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px}.demo-user:hover{border-color:#eaa;box-shadow:var(--shadow)}.demo-user b{display:block;font-size:13px}.demo-user span{display:block;color:var(--muted);font-size:11px;margin-top:3px}.login-note{margin-top:18px;padding:10px 12px;background:var(--bg);border-radius:9px;color:var(--muted);font-size:11px}
+/* App */
+#app{height:100%;display:grid;grid-template-rows:60px 1fr}.top{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px}.top-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px;letter-spacing:-.5px}.top-logo svg{width:22px;height:22px;fill:var(--red)}.top-caption{color:var(--muted);font-weight:400;font-size:13px;border-left:1px solid var(--line);padding-left:10px;margin-left:2px}.scope{font-size:10.5px;font-weight:700;color:var(--red2);background:#fff0f1;padding:5px 10px;border-radius:20px}.top-right{display:flex;align-items:center;gap:12px}.user-chip{display:flex;align-items:center;gap:8px;background:#f5f6f7;padding:5px 12px 5px 5px;border-radius:20px;border:1px solid var(--line);font-size:11.5px}.uc-av{width:26px;height:26px;background:#20252b;color:#fff;border-radius:50%;display:grid;place-items:center;font-weight:800}.uc-role{color:var(--muted);font-size:9.5px;display:block}.signout{background:none;border:1px solid var(--line);padding:6px 12px;border-radius:8px;font-size:11px;color:var(--muted)}.signout:hover{background:#f0f1f2;color:var(--ink)}.layout{display:grid;grid-template-columns:220px 1fr 280px;height:100%;overflow:hidden}.side{background:#fff;overflow-y:auto;padding:24px 20px}.side.left{border-right:1px solid var(--line)}.side.right{border-left:1px solid var(--line)}.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--red);color:#fff;border:0;padding:11px;border-radius:10px;font-weight:700;font-size:13px;margin-bottom:20px}.btn:hover{background:var(--red2)}.nav{list-style:none;padding:0;margin:0 0 24px}.nav-header{font-size:10px;text-transform:uppercase;color:#9aa1a8;font-weight:800;letter-spacing:.05em;margin:0 0 8px 12px}.nav li{padding:9px 12px;margin-bottom:3px;border-radius:8px;font-size:12px;color:var(--muted);font-weight:600;cursor:pointer}.nav li:hover{background:#f0f1f2;color:var(--ink)}.nav li.active{background:#fff0f1;color:var(--red2)}.nav-tag{font-size:9px;background:var(--bg);padding:2px 6px;border-radius:4px;float:right}.access-box{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fafbfb}.access-box b{display:block;font-size:11px;margin-bottom:4px}.access-box span{display:block;color:var(--green);font-size:10px}.arch-list{margin:0;padding:0;list-style:none}.arch-list li{font-size:11.5px;padding:8px 0;border-bottom:1px solid var(--line);color:var(--ink)}.arch-list li:last-child{border:0}.arch-list span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+/* Chat */
+.chat{min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--bg)}.chat-scroll{flex:1;overflow:auto;padding:28px 30px 20px}.welcome{max-width:860px;margin:8vh auto 0}.welcome h1{font-size:30px;margin:0 0 8px;letter-spacing:-.5px}.welcome p{margin:0;color:var(--muted);font-size:14px}.suggest-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}.suggest{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 13px;text-align:left;font-size:11.5px;color:#3f4850;box-shadow:0 2px 8px #00000006}.suggest:hover{border-color:#e6a3a6;background:#fffafa}.messages{max-width:900px;margin:0 auto}.msg{display:flex;gap:10px;margin:18px 0}.msg.user{justify-content:flex-end}.msg .mav{width:30px;height:30px;flex:0 0 auto;border-radius:9px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800}.msg.user .mav{background:#30363d;border-radius:50%}.bubble{max-width:800px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:0 4px 15px #00000005;font-size:13px;line-height:1.55}.msg.user .bubble{background:#30363d;color:#fff;border-color:#30363d}.bubble .small{font-size:10px;color:#9aa1a8;margin-top:7px}.msg.user .small{color:#c6cbd0}.thinking{display:flex;gap:5px;align-items:center;color:var(--muted);font-size:11px}.dot{width:6px;height:6px;background:#9ba2aa;border-radius:50%;animation:b 1s infinite}.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}@keyframes b{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.answer{margin-top:10px;border:1px solid var(--line);background:#fff;border-radius:15px;overflow:hidden;box-shadow:var(--shadow)}.answer-head{background:#fff0f1;padding:12px 15px;color:var(--red2);font-size:12px;font-weight:800;display:flex;justify-content:space-between}.answer-body{padding:15px}.kpi{font-size:25px;font-weight:850;letter-spacing:-.4px}.down{color:var(--red)}.up{color:var(--green)}.muted{color:var(--muted)}.finding{margin-top:11px;background:#f7f8f9;border-left:3px solid var(--red);border-radius:7px;padding:10px 11px;font-size:12.5px}.driver-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:11.5px}.driver-table th{text-align:left;color:#9199a1;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line);padding:6px}.driver-table td{padding:8px 6px;border-bottom:1px solid #f0f1f2}.num{text-align:right;font-variant-numeric:tabular-nums}.bar{height:6px;background:#e7e9eb;border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--red);border-radius:5px}.evidence{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.tag{border:1px solid var(--line);background:#fafbfb;padding:4px 8px;border-radius:20px;font-size:9.5px;color:#5d6670}.tag.good{color:var(--green);background:#effaf5;border-color:#ccebdd}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.action{border:1px solid #e6b0b3;color:var(--red2);background:#fff;border-radius:20px;padding:7px 11px;font-size:10.5px;font-weight:700}.action:hover{background:#fff0f1}.action.neutral{border-color:var(--line);color:#59636c}.chart{margin-top:14px;border:1px solid var(--line);border-radius:11px;padding:10px 11px;background:#fff}.chart-title{font-size:10px;color:#707981;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}.chart svg{width:100%;height:180px;display:block}.semantic-box{margin-top:13px;border:1px dashed #d7dade;border-radius:10px;padding:11px;background:#fbfcfc}.semantic-title{display:flex;justify-content:space-between;font-size:11px;font-weight:800}.semantic-body{margin-top:9px;display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:10.5px}.sem-row{background:#fff;border:1px solid var(--line);border-radius:7px;padding:7px}.sem-row span{display:block;color:#9aa1a8;font-size:9px;margin-bottom:2px}.detail{margin-top:11px;padding:11px;background:#fbfbfc;border:1px solid var(--line);border-radius:9px;font-size:11px}.detail h5{margin:0 0 6px;font-size:11px}.detail ul{margin:5px 0 0 17px;padding:0}.escalate{margin-top:12px;background:#fff8e9;border:1px solid #eedcae;border-radius:10px;padding:12px;font-size:11.5px}.escalate strong{display:block;margin-bottom:4px}.escalate .action{margin-top:9px}
+/* Composer */
+.composer{background:#fff;border-top:1px solid var(--line);padding:13px 24px 16px}.composer-inner{max-width:900px;margin:auto;border:1px solid #d9dde1;background:#f7f8f9;border-radius:14px;padding:7px 8px 7px 14px;display:flex;gap:8px;align-items:flex-end;position:relative;}.composer textarea{flex:1;border:0;background:transparent;resize:none;outline:0;min-height:38px;max-height:88px;padding:9px 0;font-size:13px}.send{width:38px;height:38px;border:0;border-radius:10px;background:var(--red);color:#fff;font-size:16px}.composer-note{max-width:900px;margin:7px auto 0;text-align:center;color:#9aa1a8;font-size:9.5px}
+/* Right */
+.right h3{font-size:16px;margin:0 0 3px}.right p{font-size:11px;color:var(--muted);line-height:1.5;margin:0 0 15px}.qcard{width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 11px;margin-bottom:7px;font-size:11px;line-height:1.35}.qcard:hover{background:#fffafa;border-color:#e6a3a6}.right-note{background:#fff0f1;color:var(--red2);border-radius:10px;padding:11px;font-size:10.5px;line-height:1.5;margin-top:14px}.arch{margin-top:17px;border-top:1px solid var(--line);padding-top:14px}.step{padding:8px 0 8px 11px;border-left:2px solid #e4e6e8;font-size:10.5px;color:var(--muted)}.step b{display:block;color:var(--ink);font-size:10.5px;margin-bottom:2px}
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:#20252b77;display:grid;place-items:center;z-index:50;padding:20px}.modal{width:min(650px,100%);max-height:82vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 30px 90px #0005}.modal-head{background:var(--red);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:13px}.close{background:none;border:0;color:#fff;font-size:18px}.modal-body{padding:18px;font-size:12px;line-height:1.55}.semantic-flow{display:flex;flex-direction:column;gap:7px}.flow{padding:10px;border:1px solid var(--line);border-radius:9px;background:#fafbfb}.flow b{display:block;font-size:10px;text-transform:uppercase;color:#9aa1a8;margin-bottom:3px}.flow strong{font-size:12px}.arrow{text-align:center;color:var(--red);font-weight:900}.source-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.source{border:1px solid var(--line);border-radius:10px;padding:11px}.source b{font-size:11px}.source span{display:block;color:var(--muted);font-size:10px;margin-top:4px}.ticket{background:#f7f8f9;border:1px solid var(--line);border-radius:10px;padding:13px}.ticket-id{font-size:20px;font-weight:850;margin:5px 0;color:var(--red2)}
+@media(max-width:1050px){.layout{grid-template-columns:190px 1fr}.side.right{display:none}}@media(max-width:720px){.layout{grid-template-columns:1fr}.side.left{display:none}.top-caption,.scope{display:none}.top{padding:0 12px}.chat-scroll{padding:18px 12px}.welcome{margin-top:8vh}.welcome h1{font-size:25px}.login-body,.login-top{padding-left:22px;padding-right:22px}.login-form{flex-direction:column}.user-chip .uc-role{display:none}}
+
+/* Markdown Tables */
+.answer-body table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 11.5px; }
+.answer-body th { text-align: left; color: #9199a1; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--line); padding: 6px; }
+.answer-body td { padding: 8px 6px; border-bottom: 1px solid #f0f1f2; }
+/* Voice Mic */
+.mic-btn { width: 38px; height: 38px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-size: 18px; cursor: pointer; transition: 0.2s; }
+.mic-btn:hover { background: #e5e8eb; }
+.mic-btn.listening { color: var(--red); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+/* Export Dropdown */
+.meta-row { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-top:13px; }
+.evidence { margin-top: 0; }
+.export-dropdown { position: relative; display: inline-block; }
+.export-btn { border: 1px solid var(--line); background: #fafbfb; color: #5d6670; padding: 5px 9px; border-radius: 8px; font-size: 10px; cursor: pointer; font-weight: 600; display:flex; align-items:center; gap:4px; }
+.export-btn:hover { background: #f0f1f2; }
+.export-menu { position: absolute; right: 0; bottom: 110%; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; z-index: 100; min-width: 120px; }
+.export-menu div { padding: 8px 12px; font-size: 11px; cursor: pointer; color: var(--ink); border-bottom: 1px solid #f5f6f7; }
+.export-menu div:hover { background: #f5f6f7; color: var(--red); }
+.export-menu div:last-child { border-bottom: 0; }
+
+/* Slash Command Menu */
+.slash-menu { position: absolute; bottom: 110%; left: 14px; width: 320px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; z-index: 100; margin-bottom: 10px; }
+.slash-menu.hidden { display: none !important; }
+.slash-title { padding: 10px 15px; background: #f7f8f9; border-bottom: 1px solid #e5e8eb; font-size: 10px; font-weight: 800; color: #9aa1a8; text-transform: uppercase; letter-spacing: 0.05em; }
+.slash-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0f1f2; transition: 0.2s; }
+.slash-item:hover { background: #fff0f1; }
+.slash-item:last-child { border-bottom: none; }
+.slash-item b { display: block; font-weight: 700; font-size: 13px; color: var(--ink); }
+.slash-item span { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+</style>
+</head>
+
+<body>
+<div id="login">
+  <div class="login-card">
+    <div class="login-top"><div class="mark"><svg viewBox="0 0 40 40"><path d="M20 2 36 11v18L20 38 4 29V11z"/></svg></div><div><h1>FINIQ | Ask Finance</h1><p>From Finance questions to evidence-backed insight.</p></div></div>
+    <div class="login-body"><h2>Sign in to continue</h2><p class="sub">Welcome to the FINIQ Executive Portal. Please log in with your credentials.</p>
+      <div class="login-form"><input id="loginId" placeholder="Username" autocomplete="off"><input type="password" id="loginPass" placeholder="Password" autocomplete="off" onkeydown="if(event.key==='Enter')login()"><button class="primary" onclick="login()">Sign in</button></div><div id="loginError" class="login-error"></div>
+      <div class="demo-users">
+        <button class="demo-user" onclick="quickLogin('analyst', 'analyst')"><b>Login as Analyst</b><span>Data Ingestion & Admin</span></button>
+        <button class="demo-user" onclick="quickLogin('executive', 'executive')"><b>Login as Executive</b><span>Strategic Insights & Analytics</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="top">
+    <div class="top-logo"><svg viewBox="0 0 40 40"><path d="M20 2 36 11v18L20 38 4 29V11z"/></svg>FINIQ | Ask Finance <span class="top-caption">Governed Finance Intelligence</span></div>
+    <div class="scope">• Enterprise Global Scope</div>
+    <div class="top-right">
+      <div class="user-chip"><div class="uc-av" id="ucAv"></div><div><b id="ucName"></b><span class="uc-role" id="ucRole"></span></div></div>
+      <button class="signout" onclick="signOut()">Sign Out</button>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="side left">
+      <button class="btn" onclick="newChat()">+ New Query</button>
+      <ul class="nav">
+        <li onclick="window.location.href='mailto:finance@finiq.com'">Contact Analyst</li>
+      <li onclick="window.location.href='mailto:it-support@finiq.com'">Contact IT</li>
+      <li onclick="showModal('Data & Semantic Layer', 'This module allows administrators to map complex financial SQL schema to natural language terms.')">❖ Data & semantic layer</li>
+      </ul>
+      <div class="nav-header">ACCESS & SCOPE</div>
+      <div class="access-box"><b>Authorised scope</b><span class="muted" style="color:var(--muted)">Enterprise Global Scope</span><span>✓ Entitlements enforced</span></div>
+      
+      <!-- ANALYST UPLOAD PORTAL (RBAC) -->
+      <div id="analystPortal" class="hidden" style="margin-top:16px;">
+        <div class="nav-header">DATA INGESTION (ANALYST)</div>
+        <div style="border:1px dashed #d71920; border-radius:10px; padding:15px; background:#fffafa; text-align:center;">
+            <input type="file" id="fileUpload" accept=".pdf,.xlsx,.csv" multiple style="display:none;" onchange="uploadFile(this)">
+            <button onclick="document.getElementById('fileUpload').click()" style="background:#d71920; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-size:11px; font-weight:700; width:100%; cursor:pointer;">↑ Add new data for analysis.</button>
+            <div id="uploadStatus" style="font-size:10px; color:#66707a; margin-top:8px;">Max 5MB (Competitor 10-K, Market Models)</div>
+        </div>
+      </div>
+      <br>
+      <div class="nav-header">FAVORITES</div>
+      <ul class="nav" id="favList"><li class="muted" style="background:transparent;cursor:default;font-size:11px">No favorites.</li></ul>
+      <div class="nav-header">RECENT ACTIVITY</div>
+      <ul class="nav" id="histList"><li class="muted" style="background:transparent;cursor:default;font-size:11px">No recent activity.</li></ul>
+      <br>
+      <div class="export-dropdown" style="display:block; margin-left:12px;">
+    </div>
+    </div>
+    
+    <div class="chat">
+      <div class="chat-scroll" id="scroll">
+        <div id="welcome" class="welcome">
+          <!-- Welcome text removed -->
+          <p>Ask a question about financial performance, headcount, or variances.</p>
+          <div class="suggest-row">
+            <button class="suggest" onclick="ask('What was our profit before tax in Current Month?')">What was our profit before tax in Current Month?</button>
+            <button class="suggest" onclick="ask('What were the total operating expenses for July 2026?')">What were the total operating expenses for July 2026?</button>
+            <button class="suggest" onclick="ask('What is our total headcount by country?')">What is our total headcount by country?</button>
+            <button class="suggest" onclick="ask('What is our total headcount and salary?')">What is our total headcount and salary?</button>
+          </div>
+        </div>
+        <div id="messages" class="messages"></div>
+      </div>
+      <div class="composer">
+        <div class="composer-inner">
+          <div id="slashMenu" class="slash-menu hidden">
+            <div class="slash-title">FINIQ SMART TRIGGERS</div>
+            <div class="slash-item" onclick="triggerSlash('/Morning Brief')">
+                <b>/Morning Brief</b><span>Daily executive summary & meetings</span>
+            </div>
+            <div class="slash-item" onclick="triggerSlash('/Flash Report')">
+                <b>/Flash Report</b><span>Instant variance analysis (YTD vs Target)</span>
+            </div>
+            <div class="slash-item" onclick="triggerSlash('/News')">
+                <b>/News</b><span>Top 5 banking & macroeconomic trends</span>
+            </div>
+            <div class="slash-item" onclick="triggerSlash('/Home Page')">
+                <b>/Home Page</b><span>Open HSBC Home Page</span>
+            </div>
+          </div>
+          <textarea id="input" rows="1" placeholder="Ask a Finance question..."></textarea>
+          <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Voice Typing">🎙️</button>
+          <button class="send" onclick="send()">➤</button>
+        </div>
+        <div class="composer-note">FINIQ answers only from approved data in scope. It connects to live Cloud SQL, ERP, and API systems.</div>
+      </div>
+    </div>
+
+    <div class="side right">
+      <h3>Probing Questions</h3>
+      <p>Start with a question, then go deeper only when you need to.</p>
+      
+      <div class="nav-header" style="margin-left:0">TRY ASKING</div>
+      <div class="qcard" onclick="ask('What was our profit before tax in Current Month?')">What was our profit before tax in Current Month?</div>
+      <div class="qcard" onclick="ask('What were the total operating expenses for July 2026?')">What were the total operating expenses for July 2026?</div>
+      <div class="qcard" onclick="ask('What is our total headcount by country?')">What is our total headcount by country?</div>
+      <div class="qcard" onclick="ask('What is our total headcount and salary?')">What is our total headcount and salary?</div>
+
+      <div class="nav-header" style="margin-left:0;margin-top:20px">DATA SOURCES</div>
+      <div class="qcard" onclick="showModal('How FINIQ understood the question', '<div class=&apos;semantic-flow&apos;>  <div class=&apos;flow&apos;><b>QUESTION</b><strong>&quot;Which cost center had the highest expense in August?&quot;</strong></div>  <div class=&apos;arrow&apos;>↓</div>  <div class=&apos;flow&apos;><b>FINANCE INTERPRETATION</b><strong>Metric: Operating Expense · Period: Aug 2026 · Intent: Max Cost Center Drill-down</strong></div>  <div class=&apos;arrow&apos;>↓</div>  <div class=&apos;flow&apos;><b>SEMANTIC MAPPING</b><strong>Expense → Record_Type = &apos;Expense&apos; · Grouped By: Cost_Center_Code</strong></div>  <div class=&apos;arrow&apos;>↓</div>  <div class=&apos;flow&apos;><b>LINKED DATASETS</b><strong>Supabase Cloud Data Warehouse (PostgreSQL)</strong></div>  <div class=&apos;arrow&apos;>↓</div>  <div class=&apos;flow&apos;><b>CONTROLLED OUTPUT</b><strong>Live SQL Execution + Exact Cost Center Variance + Permitted Drill-down</strong></div></div><br><b>Control principle</b><br>The conversational layer can interpret the question, but financial values are calculated from governed data.')">How did FINIQ understand this?</div>
+      <div class="qcard" onclick="showModal('Where did the data come from?','All data is pulled live from the FINIQ Supabase Cloud Data Warehouse, ensuring real-time accuracy and governance.')">Where did the data come from?</div>
+
+      <!-- KNOWLEDGE BASE WIDGET -->
+      <div class="nav-header" style="margin-left:0;margin-top:20px">EXTERNAL CONTEXT</div>
+      <div id="externalDocsList" style="font-size:11px; color:var(--muted); line-height:1.5;">
+         <i>Loading documents...</i>
+      </div>
+
+      <div class="nav-header" style="margin-left:0;margin-top:20px">BEHIND THE SCENES</div>
+      <div class="arch" style="margin-top:5px;border-top:none;padding-top:0;">
+        <div class="step"><b>1 - Understand</b>Natural language mapped to approved Finance concepts.</div>
+        <div class="step"><b>2 - Retrieve</b>Governed data is pulled via live cloud connection.</div>
+        <div class="step"><b>3 - Verify</b>Results are validated against enterprise entitlements.</div>
+      </div>
+
+      <div class="right-note">
+        <b>Controlled by design</b><br>
+        Numbers are calculated from governed data. Unsupported or ambiguous questions are not guessed.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal" class="modal-bg hidden" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head"><span id="modalTitle"></span><button class="close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ===================== SECURE UI ===================== */
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+let user = null;
+let currentSession = null;
+
+// Check persistent login
+window.onload = function() {
+  let saved = localStorage.getItem('finiq_user');
+  if(saved) {
+    user = JSON.parse(saved);
+    start(user);
+  }
+};
+
+async function login(overrideId, overridePw){
+  let id = (typeof overrideId === 'string') ? overrideId : document.getElementById('loginId').value.trim().toLowerCase();
+  let pass_el = document.getElementById('loginPass');
+  let pass = (typeof overridePw === 'string') ? overridePw : (pass_el ? pass_el.value : 'guest');
+  if(!id) return;
+
+  document.getElementById('loginError').textContent='Authenticating...';
+  
+  try {
+      let res = await fetch('/api/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({username: id, password: pass})
+      });
+      let data = await res.json();
+      if(data.status === 'success') {
+          user = data.user;
+          localStorage.setItem('finiq_user', JSON.stringify(user));
+          start(user);
+      } else {
+          document.getElementById('loginError').textContent = data.message;
+      }
+  } catch(e) {
+      document.getElementById('loginError').textContent = 'Server connection failed.';
+  }
+}
+
+function quickLogin(id, pw){
+  login(id, pw);
+}
+
+function signOut() {
+  localStorage.removeItem('finiq_user');
+  location.reload();
+}
+
+function start(u) {
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+    
+  // RBAC UI Logic
+  if(u.username === 'analyst') {
+      document.getElementById('analystPortal').classList.remove('hidden');
+      u.role = "Data Analyst";
+      u.name = "Sarah Jenkins";
+  } else {
+      let ap = document.getElementById('analystPortal');
+      if(ap) ap.classList.add('hidden');
+      u.role = "FP&A Lead";
+      u.name = "Alex Mercer";
+  }
+  document.getElementById('ucName').textContent = u.name;
+  document.getElementById('ucRole').textContent = u.role;
+  document.getElementById('ucAv').textContent = u.name.charAt(0);
+  
+  loadExternalDocs();
+
+  
+  let inputEl = document.getElementById('input');
+  inputEl.addEventListener('keydown', e => {
+    if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+  
+  // Slash menu listener
+  inputEl.addEventListener('input', function(e) {
+      let menu = document.getElementById('slashMenu');
+      if (this.value.trim() === '/') {
+          menu.classList.remove('hidden');
+      } else {
+          menu.classList.add('hidden');
+      }
+  });
+  
+  loadHistory();
+}
+
+function triggerSlash(cmd) {
+    document.getElementById('slashMenu').classList.add('hidden');
+    if (cmd === '/Home Page') {
+        window.open('https://www.hsbc.com.hk/', '_blank');
+        document.getElementById('input').value = '';
+        return;
+    }
+    document.getElementById('input').value = cmd;
+    send();
+}
+
+
+async function uploadFile(input) {
+    if(!input.files || input.files.length === 0) return;
+    let statusEl = document.getElementById('uploadStatus');
+    
+    statusEl.innerHTML = "<b>Uploading & Extracting...</b>";
+    statusEl.style.color = "#d71920";
+    
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (let i = 0; i < input.files.length; i++) {
+        let file = input.files[i];
+        let fd = new FormData();
+        fd.append('file', file);
+        fd.append('user_id', user.username);
+        
+        try {
+            let res = await fetch('/api/upload', { method: 'POST', body: fd });
+            let data = await res.json();
+            if(data.status === 'success') {
+                successCount++;
+            } else {
+                errorCount++;
+            }
+        } catch(e) {
+            errorCount++;
+        }
+    }
+    
+    if (errorCount === 0) {
+        statusEl.innerHTML = `<span style='color:#16845b'>✓ Ingested ${successCount} files</span>`;
+    } else {
+        statusEl.innerHTML = `<span style='color:#d71920'>Ingested ${successCount}, Failed ${errorCount}</span>`;
+    }
+    
+    input.value = "";
+    loadExternalDocs(); // Refresh list
+}
+
+async function loadExternalDocs() {
+    try {
+        let res = await fetch('/api/documents');
+        let docs = await res.json();
+        let listEl = document.getElementById('externalDocsList');
+        if(!docs || docs.length === 0) {
+            listEl.innerHTML = "<i>No external context uploaded yet.</i>";
+            return;
+        }
+        
+        let html = "";
+        docs.forEach(d => {
+            let icon = d.doc_type === 'pdf' ? '📄' : '📊';
+            html += `<div style="padding:6px 0; border-bottom:1px solid #e5e8eb; display:flex; gap:6px;">
+                <span>${icon}</span>
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ink); font-weight:600;">${d.filename}</span>
+            </div>`;
+        });
+        listEl.innerHTML = html;
+    } catch(e) {
+        document.getElementById('externalDocsList').innerHTML = "<i>Error loading docs.</i>";
+    }
+}
+
+/* ===================== CHAT LOGIC ===================== */
+function scroll(){
+  let el = document.getElementById('scroll');
+  el.scrollTo({top: el.scrollHeight, behavior: 'smooth'});
+}
+
+function ask(q){
+  document.getElementById('input').value = q;
+  send();
+}
+
+function addUser(text, timeStr){
+  if(!timeStr) timeStr = new Date().toLocaleString();
+  document.getElementById('welcome').classList.add('hidden');
+  document.getElementById('messages').insertAdjacentHTML('beforeend',
+    `<div class="msg user"><div class="bubble">${esc(text)}<div class="small">${timeStr}</div></div><div class="mav">${user.name.charAt(0)}</div></div>`
+  );
+  scroll();
+}
+
+function addAgent(html, timeStr){
+  if(!timeStr) timeStr = new Date().toLocaleString();
+  document.getElementById('messages').insertAdjacentHTML('beforeend',
+    `<div class="msg"><div class="mav">F</div><div class="bubble" style="width:min(800px,100%)">${html}<div class="small">FINIQ · ${timeStr}</div></div></div>`
+  );
+  scroll();
+}
+
+function meta(source='Financial Performance'){
+  return `<div class="meta-row">
+    <div class="evidence">
+      <span class="tag">Platform · ${source}</span>
+      <span class="tag good">✓ Governed Data Live Connection</span>
+    </div>
+    <div class="export-dropdown">
+      <button class="export-btn" onclick="this.nextElementSibling.classList.toggle('hidden')">Export ▾</button>
+      <div class="export-menu hidden">
+         <div onclick="exportAnswer(this, 'excel'); this.parentElement.classList.add('hidden')">Export to Excel</div>
+         <div onclick="exportAnswer(this, 'word'); this.parentElement.classList.add('hidden')">Export to Word</div>
+         <div onclick="exportAnswer(this, 'pdf'); this.parentElement.classList.add('hidden')">Export to PDF</div>
+         <div onclick="exportAnswer(this, 'text'); this.parentElement.classList.add('hidden')">Export to Text</div>
+      </div>
+    </div>
+  </div>`
+}
+
+async function send(){
+  let val = document.getElementById('input').value.trim();
+  if(!val) return;
+  
+  document.getElementById('input').value = '';
+  document.getElementById('slashMenu').classList.add('hidden'); // hide menu if open
+  addUser(val);
+  
+  let msgId = 'msg_' + Date.now();
+  document.getElementById('messages').insertAdjacentHTML('beforeend',
+    `<div class="msg" id="${msgId}"><div class="mav">F</div><div class="bubble"><div class="thinking"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Working...</div></div></div>`
+  );
+  scroll();
+  
+  try {
+      let res = await fetch('/api/chat', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            query: val,
+            user_id: user.username,
+            session_id: currentSession
+          })
+      });
+      let result = await res.json();
+      document.getElementById(msgId).remove();
+      
+      if(result.session_id) currentSession = result.session_id;
+      
+      let html = `<div class="answer">`;
+      if(result.error) {
+          html += `<div class="answer-head" style="color:var(--red);background:#fff0f1">FINIQ Query Error</div>
+                   <div class="answer-body"><div class="escalate"><strong>Error</strong>${esc(result.error)}</div>${meta('Error Handler')}</div>`;
+      } else {
+          let formattedText = marked.parse(result.narrative);
+          html += `<div class="answer-head">FINIQ Verified Response</div>
+                   <div class="answer-body">${formattedText}${meta(result.platform)}</div>`;
+      }
+      html += `</div>`;
+      
+      let d = new Date(); if(result.ai_timestamp) d = new Date(result.ai_timestamp); addAgent(html, d.toLocaleString());
+      loadHistory();
+      
+  } catch(e) {
+      document.getElementById(msgId).remove();
+      addAgent(`<div class="escalate"><strong>Connection Failed</strong>Could not reach FINIQ server.</div>`);
+  }
+}
+
+/* ===================== HISTORY ===================== */
+async function loadHistory() {
+  if (user.username === 'guest') return;
+  
+  try {
+      let res = await fetch('/api/sessions?user_id=' + user.username);
+      let sessions = await res.json();
+      let favHtml = '';
+      let histHtml = '';
+      
+      sessions.forEach(s => {
+          let title = esc(s.title);
+          if (title.length > 25) title = title.substring(0,25)+'...';
+          let s_id = s.session_id || s.id;
+            let item = `<li onclick="loadSession('${s_id}')" style="display:flex; justify-content:space-between; align-items:center;">
+    <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${title}</span>
+    <span class="three-dots" style="padding:0 5px; cursor:pointer; font-weight:bold; color:var(--muted);" onclick="showContext(event, '${s_id}', ${s.is_pinned})">⋮</span>
+</li>`;
+            if (s.is_pinned) favHtml += item;
+            else histHtml += item;
+      });
+      
+      document.getElementById('favList').innerHTML = favHtml || '<li class="muted" style="background:transparent;cursor:default;font-size:11px">No favorites.</li>';
+      document.getElementById('histList').innerHTML = histHtml || '<li class="muted" style="background:transparent;cursor:default;font-size:11px">No recent activity.</li>';
+  } catch(e){}
+}
+
+async function loadSession(id) {
+  currentSession = id;
+  document.getElementById('welcome').classList.add('hidden');
+  document.getElementById('messages').innerHTML = '<div class="msg"><div class="mav">F</div><div class="bubble">Loading...</div></div>';
+  
+  try {
+      let res = await fetch('/api/sessions/' + id + '/messages');
+      let data = await res.json();
+      document.getElementById('messages').innerHTML = '';
+      
+      data.forEach(m => {
+          let timeStr = new Date(m.created_at).toLocaleString();
+          if (m.role === 'user') {
+              addUser(m.content, timeStr);
+          } else {
+              let formattedText = marked.parse(m.content);
+              let innerHtml = `<div class="answer">
+                 <div class="answer-head">FINIQ Verified Response</div>
+                 <div class="answer-body">${formattedText}${meta('Historical Data')}</div>
+              </div>`;
+              addAgent(innerHtml, timeStr);
+          }
+      });
+  } catch(e) {
+      document.getElementById('messages').innerHTML = '<div class="msg"><div class="mav">F</div><div class="bubble">Error loading session.</div></div>';
+  }
+}
+
+function newChat() {
+  currentSession = null;
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('welcome').classList.remove('hidden');
+}
+
+
+  function showContext(e, id, isPinned) {
+      e.stopPropagation();
+      let old = document.getElementById('context-menu');
+      if(old) old.remove();
+      
+      let menu = document.createElement('div');
+      menu.id = 'context-menu';
+      // Bulletproof fixed positioning so it NEVER gets clipped by overflow:hidden sidebars
+      menu.style.cssText = `position:fixed; left:${e.clientX}px; top:${e.clientY}px; z-index:9999; min-width:160px; background:#fff; border:1px solid #e5e8eb; box-shadow:0 4px 15px rgba(0,0,0,0.1); border-radius:8px; font-size:11.5px; overflow:hidden;`;
+      
+      let renameOpt = `<div style="padding:10px 14px; cursor:pointer; border-bottom:1px solid #f5f6f7; color:#20252b;" onclick="renameSession('${id}')" onmouseover="this.style.background='#f0f1f2'" onmouseout="this.style.background='transparent'">Rename</div>`;
+      let favOpt = `<div style="padding:10px 14px; cursor:pointer; border-bottom:1px solid #f5f6f7; color:#20252b;" onclick="togglePin('${id}', ${!isPinned})" onmouseover="this.style.background='#f0f1f2'" onmouseout="this.style.background='transparent'">${isPinned ? 'Remove from favorites' : 'Add to favorites'}</div>`;
+      let delOpt = `<div style="padding:10px 14px; cursor:pointer; color:#d71920;" onclick="deleteSession('${id}')" onmouseover="this.style.background='#fff0f1'" onmouseout="this.style.background='transparent'">Delete</div>`;
+      
+      menu.innerHTML = renameOpt + favOpt + delOpt;
+      document.body.appendChild(menu);
+      
+      setTimeout(() => {
+          document.addEventListener('click', function closeMenu() {
+              if(document.getElementById('context-menu')) document.getElementById('context-menu').remove();
+              document.removeEventListener('click', closeMenu);
+          });
+      }, 10);
+  }
+
+  async function renameSession(id) {
+      let newName = prompt("Enter new name for this chat:");
+      if (!newName || newName.trim() === '') return;
+      await fetch('/api/sessions/' + id + '/rename', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({title: newName.trim()})
+      });
+      loadHistory();
+  }
+
+  async function deleteSession(id) {
+  if(!confirm("Delete this session?")) return;
+  await fetch('/api/sessions/' + id, {method:'DELETE'});
+  if(currentSession === id) newChat();
+  loadHistory();
+}
+
+async function togglePin(id, pinStatus) {
+  await fetch('/api/sessions/' + id + '/pin', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({is_pinned: pinStatus})
+  });
+  loadHistory();
+}
+
+/* ===================== MODAL ===================== */
+function showModal(title, text){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = text;
+  document.getElementById('modal').classList.remove('hidden');
+}
+function closeModal(){
+  document.getElementById('modal').classList.add('hidden');
+}
+
+/* ===================== EXPORT LOGIC ===================== */
+function exportAnswer(el, format) {
+    let answerBody = el.closest('.answer').querySelector('.answer-body');
+    
+    // CLONE the answer body so we can remove the UI buttons without deleting them from the screen
+    let clone = answerBody.cloneNode(true);
+    let metaRow = clone.querySelector('.meta-row');
+    if (metaRow) metaRow.remove();
+    
+    let contentText = clone.innerText.trim();
+    
+    if (format === 'text') {
+        let blob = new Blob([contentText], { type: "text/plain;charset=utf-8" });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a"); a.href = url; a.download = "FINIQ_Export.txt"; a.click();
+    } 
+    else if (format === 'excel') {
+        let table = clone.querySelector('table');
+        let wb = XLSX.utils.book_new();
+        if(table) {
+            let ws = XLSX.utils.table_to_sheet(table);
+            XLSX.utils.book_append_sheet(wb, ws, "FINIQ Export");
+        } else {
+            let ws = XLSX.utils.aoa_to_sheet([[contentText]]);
+            XLSX.utils.book_append_sheet(wb, ws, "FINIQ Export");
+        }
+        XLSX.writeFile(wb, "FINIQ_Export.xlsx");
+    }
+    else if (format === 'pdf') {
+        let opt = {
+          margin: 0.5,
+          filename: 'FINIQ_Export.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(clone).save();
+    }
+    else if (format === 'word') {
+        let header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export</title></head><body>";
+        let footer = "</body></html>";
+        let sourceHTML = header + clone.innerHTML + footer;
+        let blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a"); a.href = url; a.download = "FINIQ_Export.doc"; a.click();
+    }
+}
+
+/* ===================== VOICE LOGIC ===================== */
+let recognition;
+if ('webkitSpeechRecognition' in window) {
+    recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+    
+    recognition.onresult = function(event) {
+        let transcript = event.results[0][0].transcript;
+        let el = document.getElementById('input');
+        el.value = (el.value + ' ' + transcript).trim();
+        document.getElementById('micBtn').classList.remove('listening');
+    };
+    recognition.onerror = function() { document.getElementById('micBtn').classList.remove('listening'); };
+    recognition.onend = function() { document.getElementById('micBtn').classList.remove('listening'); };
+}
+
+function toggleVoice() {
+    let btn = document.getElementById('micBtn');
+    if(!recognition) {
+        alert("Voice recording is not supported in this browser. Try Google Chrome.");
+        return;
+    }
+    if(btn.classList.contains('listening')) {
+        recognition.stop();
+        btn.classList.remove('listening');
+    } else {
+        recognition.start();
+        btn.classList.add('listening');
+    }
+}
+</script>
+</body>
+</html>
