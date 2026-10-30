@@ -44,7 +44,7 @@ class SemanticEngine:
             return resp.choices[0].message.content or ""
         else:
             resp = self.gemini_client.models.generate_content(
-                model="gemini-3.6-flash",
+                model="gemini-2.5-flash",
                 contents=prompt
             )
             return resp.text or ""
@@ -97,7 +97,7 @@ class SemanticEngine:
         return html
 
     def ask(self, query, history=None):
-        print(f"\\n[AI Processing]: '{query}'")
+        print(f"\n[AI Processing]: '{query}'")
 
         # -----------------------------------------------------
         # STATIC SLASH COMMAND INTERCEPTORS FOR DEMO
@@ -201,7 +201,7 @@ class SemanticEngine:
         history_text = ""
         for msg in history[-4:]:
             role = "User" if msg.get("role") == "user" else "FINIQ"
-            history_text += f"{role}: {msg.get('content')}\\n"
+            history_text += f"{role}: {msg.get('content')}\n"
 
         system_prompt_base = f"""You are FINIQ, an Enterprise Finance AI.
 Your ONLY data source is the centralized Supabase PostgreSQL Data Warehouse.
@@ -214,7 +214,9 @@ The schema contains these 6 tables:
 6. finiq_external_docs (doc_id, filename, doc_type, extracted_text, uploaded_by, uploaded_at)
 
 CRITICAL SEMANTIC MAPPINGS:
-- If the user asks for "Profit Before Tax" or "PBT", query for "%INCOME BEFORE INCOME TAXES%" in the Metric column (using ILIKE because it usually has (Actual) or (Forecast) appended).
+- If the user asks for "Profit Before Tax" or "PBT", query for "%INCOME BEFORE INCOME TAXES%" in the Metric column.
+- Unless the user specifically asks for Budget or Forecast, prioritize and default to '(Actual)' records (e.g. Metric ILIKE '%(Actual)%'). If the user asks for variance, budget, target, or comparison, retrieve both '(Actual)' and '(Budget)'.
+- Always include the "Metric" column in the SELECT query from mit_pnl so the Scenario (Actual vs Budget vs Forecast) is unmistakably clear in the data.
 - If the user asks for "Current Month" or "This Month", use Month = '2026-08' (August 2026 is the last closed actuals month).
 
 CONVERSATION HISTORY:
@@ -226,9 +228,9 @@ USER QUERY: {query}
 
 INSTRUCTIONS FOR ROUTING:
 - You must decide how to handle this query.
-- CRITICAL: PostgreSQL is case-sensitive for these tables. You MUST wrap ALL column names in double quotes. BECAUSE YOU ARE RETURNING JSON, YOU MUST ESCAPE THOSE QUOTES: e.g. {{"action": "sql", "sql_query": "SELECT \"Country\" FROM hr_workforce_roster"}}
+- CRITICAL: PostgreSQL is case-sensitive for these tables. You MUST wrap ALL column names in double quotes. BECAUSE YOU ARE RETURNING JSON, YOU MUST ESCAPE THOSE QUOTES: e.g. {{"action": "sql", "sql_query": "SELECT \\"Country\\" FROM hr_workforce_roster"}}
 - To find the owner or manager of a cost center, JOIN with the dmi_cost_centers table using "Cost_Center_Code".
-- IMPORTANT EXTERNAL RAG: If the user asks about an external competitor, PDF, or Excel upload, query the finiq_external_docs table. Do NOT filter by filename if comparing multiple companies. Example: SELECT \"filename\", \"extracted_text\" FROM finiq_external_docs; The massive extracted_text will be returned to you in step 2 so you can cross-reference it.
+- IMPORTANT EXTERNAL RAG: If the user asks about an external competitor, PDF, or Excel upload, query the finiq_external_docs table. Do NOT filter by filename if comparing multiple companies. Example: SELECT \\"filename\\", \\"extracted_text\\" FROM finiq_external_docs; The massive extracted_text will be returned to you in step 2 so you can cross-reference it.
 - Reply EXACTLY with a JSON object. No markdown, no conversational text.
 - If the question can be answered by SQL, return: {{"action": "sql", "sql_query": "SELECT ..."}}
 - If the question cannot be answered by SQL, return: {{"action": "reply", "message": "I cannot answer this."}}
@@ -280,10 +282,11 @@ Raw Data Returned: {str(data)[:400000]}
 
 INSTRUCTIONS:
 1. Start directly with the answer summarizing the main result. Do NOT use conversational filler like "I accessed the database" or "Here is the data". Be direct, professional, and executive-level.
-2. Present the actual data, drivers, or answers as concise bullet points, UNLESS the user explicitly requests a table or tabular form.
-3. If Raw Data is empty ([]), clearly state that no records were found after thorough database verification.
-4. Keep the overall response brief and punchy. Do not hallucinate.
-5. CRITICAL MARKDOWN RULE: Never use the tilde symbol (~) to mean "approximately" as it breaks markdown strikethrough rendering. Always use "approx." or "c." instead.
+2. SCENARIO & VARIANCE CLARITY: When reporting metrics from mit_pnl or any multi-scenario data, ALWAYS clearly label each figure with its scenario (e.g. "**Actual:** $65,730M", "**Budget:** $71,400M"). NEVER output raw numbers without specifying whether they are Actual, Budget, or Forecast. If both Actual and Budget are present in the returned data, calculate and display the variance (e.g. "**Variance:** -$5,670M (-7.9%) Unfavorable / Below Budget").
+3. Present the actual data, drivers, or answers as concise bullet points, UNLESS the user explicitly requests a table or tabular form.
+4. If Raw Data is empty ([]), clearly state that no records were found after thorough database verification.
+5. Keep the overall response brief and punchy. Do not hallucinate.
+6. CRITICAL MARKDOWN RULE: Never use the tilde symbol (~) to mean "approximately" as it breaks markdown strikethrough rendering. Always use "approx." or "c." instead.
 """
 
         for attempt in range(max_retries):
